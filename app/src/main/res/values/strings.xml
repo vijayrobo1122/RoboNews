@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Robo News</string>
+    <string name="content_description">Content Description</string>
+    <string name="internet_not_available">Please check your network connection.</string>
+    <string name="no_data_available">No data available</string>
+
+    <string name="popular_news">Popular News</string>
+    <string name="top_news">Top News</string>
+    <string name="loading_text">Loading…</string>
+
+</resources>
