@@ -114,7 +114,7 @@ class NewsFragment : Fragment() {
                     binding.loaderView.progressView.visible()
                 }
                 Status.SUCCESS -> {
-                    try {
+                    runCatching {
                         Log.d(TAG, "SUCCESS...")
                         binding.loaderView.progressView.gone()
                         val success = it.data?.success ?: false
@@ -124,17 +124,17 @@ class NewsFragment : Fragment() {
                         }
                         binding.topNewsRecyclerView.adapter!!.notifyDataSetChanged()
                         myViewModel.fetchPopularNewsList(DEFAULT_PAGE_INDEX)
-                    } catch (e: Exception) {
+                    }.onFailure { e ->
                         e.printStackTrace()
                     }
                 }
                 Status.ERROR -> {
-                    try {
+                    runCatching {
                         Log.d(TAG, "ERROR...")
                         binding.loaderView.progressView.gone()
                         binding.viewLoading.gone()
                         activity?.toast(it.message)
-                    } catch (e: Exception) {
+                    }.onFailure { e ->
                         e.printStackTrace()
                     }
                 }
@@ -152,7 +152,7 @@ class NewsFragment : Fragment() {
                     }
                 }
                 Status.SUCCESS -> {
-                    try {
+                    runCatching {
                         Log.d(TAG, "SUCCESS...")
                         binding.loaderView.progressView.gone()
                         binding.viewLoading.gone()
@@ -164,17 +164,17 @@ class NewsFragment : Fragment() {
                         binding.popularNewsRecyclerView.adapter!!.notifyDataSetChanged()
                         myViewModel._showEmptyView.value =
                             myViewModel.popularNewsList.value!!.size < 1
-                    } catch (e: Exception) {
+                    }.onFailure { e ->
                         e.printStackTrace()
                     }
                 }
                 Status.ERROR -> {
-                    try {
+                    runCatching {
                         Log.d(TAG, "ERROR...")
                         binding.loaderView.progressView.gone()
                         binding.viewLoading.gone()
                         activity?.toast(it.message)
-                    } catch (e: Exception) {
+                    }.onFailure { e ->
                         e.printStackTrace()
                     }
                 }

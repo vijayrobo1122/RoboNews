@@ -46,27 +46,23 @@ class DetailViewModel constructor(private val newsRepository: NewsRepository) : 
 
     fun fetchPopularNewsList(pageIndex: Int) {
         viewModelScope.launch {
-            try {
-                _popularNewsListResponse.addSource(newsRepository.getPopularNewsList(page = pageIndex)) {
-                    if (it.status == Status.SUCCESS && it.data != null) {
-                        try {
-                            val list = it.data.newsList
-                            if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
-                            _popularNewsList.value?.addAll(list)
-                            if (it.data.totalResults > _popularNewsList.value!!.size) {
-                                _pageIndex.value = pageIndex + 1
-                            } else {
-                                _pageIndex.value = -1
-                                _lastPage.value = true
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+            _popularNewsListResponse.addSource(newsRepository.getPopularNewsList(page = pageIndex)) {
+                if (it.status == Status.SUCCESS && it.data != null) {
+                    runCatching {
+                        val list = it.data.newsList
+                        if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
+                        _popularNewsList.value?.addAll(list)
+                        if (it.data.totalResults > _popularNewsList.value!!.size) {
+                            _pageIndex.value = pageIndex + 1
+                        } else {
+                            _pageIndex.value = -1
+                            _lastPage.value = true
                         }
+                    }.onFailure { e ->
+                        e.printStackTrace()
                     }
-                    _popularNewsListResponse.value = Event(it)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                _popularNewsListResponse.value = Event(it)
             }
         }
     }

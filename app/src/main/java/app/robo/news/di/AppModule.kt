@@ -62,8 +62,8 @@ private fun provideApiSource(retrofit: Retrofit): ApiSource {
     return retrofit.create(ApiSource::class.java)
 }
 
-private fun provideNewsRepository(apiSource: ApiSource): NewsRepository {
-    return NewsRepository(apiSource)
+private fun provideNewsRepository(context: Context, apiSource: ApiSource): NewsRepository {
+    return NewsRepository(context, apiSource)
 }
 
 val appModule = module {
@@ -73,7 +73,7 @@ val appModule = module {
     single { provideOkHttpClient(get(), get()) }
     single { provideRetrofit(get(), get()) }
     single { provideApiSource(get()) }
-    single { provideNewsRepository(get()) }
+    single { provideNewsRepository(get(), get()) }
     viewModel { NewsViewModel(get()) }
     viewModel { DetailViewModel(get()) }
 }

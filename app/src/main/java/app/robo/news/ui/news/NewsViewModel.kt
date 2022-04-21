@@ -50,53 +50,45 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
         get() = _popularNewsListResponse
 
     fun fetchTopNewsList() {
-        try {
-            viewModelScope.launch {
-                _topNewsListResponse.addSource(newsRepository.getTopHeadLineNewsList()) {
-                    if (it.status == Status.SUCCESS && it.data != null) {
-                        try {
-                            val list = it.data.newsList
-                            /**
-                             * for testing we are showing only one top news here
-                             */
-                            if (list.size > 0) {
-                                _topNewsList.value?.add(list[0])
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+        viewModelScope.launch {
+            _topNewsListResponse.addSource(newsRepository.getTopHeadLineNewsList()) {
+                if (it.status == Status.SUCCESS && it.data != null) {
+                    runCatching {
+                        val list = it.data.newsList
+                        /**
+                         * for testing we are showing only one top news here
+                         */
+                        if (list.size > 0) {
+                            _topNewsList.value?.add(list[0])
                         }
+                    }.onFailure { e ->
+                        e.printStackTrace()
                     }
-                    _topNewsListResponse.value = Event(it)
                 }
+                _topNewsListResponse.value = Event(it)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     fun fetchPopularNewsList(pageIndex: Int) {
         viewModelScope.launch {
-            try {
-                _popularNewsListResponse.addSource(newsRepository.getPopularNewsList(page = pageIndex)) {
-                    if (it.status == Status.SUCCESS && it.data != null) {
-                        try {
-                            val list = it.data.newsList
-                            if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
-                            _popularNewsList.value?.addAll(list)
-                            if (it.data.totalResults > _popularNewsList.value!!.size) {
-                                _pageIndex.value = pageIndex + 1
-                            } else {
-                                _pageIndex.value = -1
-                                _lastPage.value = true
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+            _popularNewsListResponse.addSource(newsRepository.getPopularNewsList(page = pageIndex)) {
+                if (it.status == Status.SUCCESS && it.data != null) {
+                    runCatching {
+                        val list = it.data.newsList
+                        if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
+                        _popularNewsList.value?.addAll(list)
+                        if (it.data.totalResults > _popularNewsList.value!!.size) {
+                            _pageIndex.value = pageIndex + 1
+                        } else {
+                            _pageIndex.value = -1
+                            _lastPage.value = true
                         }
+                    }.onFailure { e ->
+                        e.printStackTrace()
                     }
-                    _popularNewsListResponse.value = Event(it)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                _popularNewsListResponse.value = Event(it)
             }
         }
     }
