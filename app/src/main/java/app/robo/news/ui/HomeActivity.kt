@@ -22,6 +22,7 @@ class HomeActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.lifecycleOwner = this
         setSupportActionBar(binding.toolbar)
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, NewsFragment.newInstance())

@@ -8,14 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import app.robo.news.R
 import com.bumptech.glide.Glide
 
-private val bindingUtilsTAG: String = "BindingUtils"
-
 interface BindableAdapter<T> {
     fun setData(data: T)
-}
-
-interface BindableSelectedAdapter<T> {
-    fun setData(data: T, selectedPos: Int)
 }
 
 @BindingAdapter("data")
@@ -40,9 +34,7 @@ fun setFullImage(image: ImageView, path: String?) {
 fun setImage(image: ImageView, path: String?) {
     val placeHolder = ColorDrawable(ContextCompat.getColor(image.context, R.color.gray))
     if (!path.isNullOrEmpty()) {
-        val imageUrl = path
-
-        Glide.with(image.context).load(imageUrl)
+        Glide.with(image.context).load(path)
             .placeholder(placeHolder)
             .error(placeHolder).centerCrop()
             .into(image)

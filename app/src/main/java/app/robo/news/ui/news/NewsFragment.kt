@@ -36,18 +36,18 @@ class NewsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        Log.e(TAG, "onCreateView")
         binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.fragment_news, container, false
         )
-        binding.lifecycleOwner = this
-        binding.viewModel = myViewModel
+        binding.apply {
+            lifecycleOwner = this@NewsFragment
+            viewModel = myViewModel
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e(TAG, "onViewCreated")
         setToolbar()
         observerMessage()
         observerTopNewsListResponse()
@@ -58,34 +58,33 @@ class NewsFragment : Fragment() {
     }
 
     private fun setToolbar() {
-        if (activity != null) {
-            (activity as HomeActivity).supportActionBar?.title = ""
+        activity?.let {
+            (it as HomeActivity).supportActionBar?.title = ""
         }
     }
 
     private fun initialiseTopNewsAdapter() {
         val topNewsAdapter = TopNewsAdapter(
-            clickListener = { news: News, pos: Int, type: Int ->
-                Log.d(TAG, "initialiseTopNewsAdapter item click")
+            clickListener = { news: News ->
                 openDetailView(news)
             }
         )
-        binding.topNewsRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        binding.topNewsRecyclerView.adapter = topNewsAdapter
+        binding.topNewsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            adapter = topNewsAdapter
+        }
     }
 
     private fun initialisePopularNewsAdapter() {
-        val adapter = PopularNewsAdapter(
-            clickListener = { news: News, pos: Int, type: Int ->
+        val popularNewsAdapter = PopularNewsAdapter(
+            clickListener = { news: News ->
                 openDetailView(news)
-
             }
         )
-        binding.popularNewsRecyclerView.adapter = adapter
-
-        val layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        binding.popularNewsRecyclerView.layoutManager = layoutManager
+        binding.popularNewsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+            adapter = popularNewsAdapter
+        }
 
         binding.mainScrollView.viewTreeObserver.addOnScrollChangedListener {
             val view =
@@ -93,8 +92,6 @@ class NewsFragment : Fragment() {
             val diff: Int =
                 view.bottom - (binding.mainScrollView.height + binding.mainScrollView.scrollY)
             if (diff == 0 && myViewModel.popularNewsList.value!!.size > 0 && !myViewModel.lastPage.value!!) {
-                // your pagination code
-                //viewModel._loading.value = true
                 binding.viewLoading.visible()
                 myViewModel.fetchPopularNewsList(myViewModel.pageIndex.value!!)
             }
@@ -120,11 +117,8 @@ class NewsFragment : Fragment() {
                     try {
                         Log.d(TAG, "SUCCESS...")
                         binding.loaderView.progressView.gone()
-                        //viewModel._loading.value = false
                         val success = it.data?.success ?: false
                         val message = it.data?.message ?: ""
-                        Log.d(TAG, "success : $success")
-                        Log.d(TAG, "message : $message")
                         if (!success) {
                             activity?.toast(message)
                         }
@@ -162,11 +156,8 @@ class NewsFragment : Fragment() {
                         Log.d(TAG, "SUCCESS...")
                         binding.loaderView.progressView.gone()
                         binding.viewLoading.gone()
-                        //viewModel._loading.value = false
                         val success = it.data?.success ?: false
                         val message = it.data?.message ?: ""
-                        Log.d(TAG, "success : $success")
-                        Log.d(TAG, "message : $message")
                         if (!success) {
                             activity?.toast(message)
                         }
@@ -199,10 +190,8 @@ class NewsFragment : Fragment() {
         val detailsFragment = DetailFragment.newInstance()
         detailsFragment.arguments = bundle
 
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, detailsFragment, "DetailFragment")
-            .addToBackStack(null)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.container, detailsFragment, "DetailFragment").addToBackStack(null)
             .commit()
 
     }

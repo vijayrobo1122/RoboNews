@@ -42,7 +42,10 @@ class DetailFragment : Fragment() {
     ): View {
         binding =
             DataBindingUtil.inflate(layoutInflater, R.layout.fragment_detail, container, false)
-        binding.viewModel = myViewModel
+        binding.apply {
+            lifecycleOwner = this@DetailFragment
+            viewModel = myViewModel
+        }
         return binding.root
     }
 
@@ -60,8 +63,7 @@ class DetailFragment : Fragment() {
     private fun fetchIntentData() {
         if (arguments != null) {
             if (requireArguments().containsKey(EXTRA_KEY_NEWS)) {
-                val newsData: News? =
-                    requireArguments().getSerializable(EXTRA_KEY_NEWS) as News?
+                val newsData: News? = requireArguments().getSerializable(EXTRA_KEY_NEWS) as News?
                 if (newsData != null) {
                     myViewModel._selectedNews.value = newsData
                 }
@@ -70,21 +72,16 @@ class DetailFragment : Fragment() {
     }
 
     private fun setToolbar() {
-        if (activity != null) {
-            (activity as HomeActivity).supportActionBar?.title =
-                myViewModel.selectedNews.value?.url ?: ""
+        activity?.let {
+            (it as HomeActivity).supportActionBar?.title = myViewModel.selectedNews.value?.url ?: ""
         }
     }
 
     private fun setUpWebview() {
 
-        // Get the web view settings instance
         val settings = binding.webview.settings
         settings.apply {
-            // Enable java script in web view
             javaScriptEnabled = true
-
-            // Enable zooming in web view
             setSupportZoom(false)
         }
 
@@ -95,17 +92,14 @@ class DetailFragment : Fragment() {
             binding.webview.gone()
         }
 
-        // Set web view client
         binding.webview.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
                 // Page loading started
-                // Do something
                 binding.loaderView.progressView.visible()
             }
 
             override fun onPageFinished(view: WebView, url: String) {
                 // Page loading finished
-                // Enable disable back forward button
                 binding.loaderView.progressView.gone()
                 myViewModel.fetchPopularNewsList(DEFAULT_PAGE_INDEX)
             }
@@ -114,14 +108,13 @@ class DetailFragment : Fragment() {
 
 
     private fun initialisePopularNewsAdapter() {
-        val adapter = PopularNewsAdapter(
-            clickListener = { _: News, _: Int, _: Int ->
-            }
+        val popularNewsAdapter = PopularNewsAdapter(
+            clickListener = { }
         )
-        binding.popularNewsRecyclerView.adapter = adapter
-
-        val layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        binding.popularNewsRecyclerView.layoutManager = layoutManager
+        binding.popularNewsRecyclerView.apply {
+            adapter = popularNewsAdapter
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        }
 
         binding.mainScrollView.viewTreeObserver.addOnScrollChangedListener {
             val view =
@@ -129,8 +122,6 @@ class DetailFragment : Fragment() {
             val diff: Int =
                 view.bottom - (binding.mainScrollView.height + binding.mainScrollView.scrollY)
             if (diff == 0 && myViewModel.popularNewsList.value!!.size > 0 && !myViewModel.lastPage.value!!) {
-                // your pagination code
-                //viewModel._loading.value = true
                 binding.viewLoading.visible()
                 myViewModel.fetchPopularNewsList(myViewModel.pageIndex.value!!)
             }
@@ -158,11 +149,8 @@ class DetailFragment : Fragment() {
                         Log.d(TAG, "SUCCESS...")
                         binding.loaderView.progressView.gone()
                         binding.viewLoading.gone()
-                        //viewModel._loading.value = false
                         val success = it.data?.success ?: false
                         val message = it.data?.message ?: ""
-                        Log.d(TAG, "success : $success")
-                        Log.d(TAG, "message : $message")
                         if (!success) {
                             activity?.toast(message)
                         }

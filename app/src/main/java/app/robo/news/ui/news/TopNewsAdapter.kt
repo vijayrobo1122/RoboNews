@@ -10,9 +10,8 @@ import app.robo.news.R
 import app.robo.news.data.model.other.News
 import app.robo.news.databinding.ItemTopNewsBinding
 import app.robo.news.utils.BindableAdapter
-import app.robo.news.utils.TYPE_NEWS_DETAIL
 
-class TopNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
+class TopNewsAdapter(private val clickListener: (News) -> Unit) :
     RecyclerView.Adapter<TopNewsAdapter.TopNewsViewHolder>(),
     BindableAdapter<ArrayList<News>> {
 
@@ -41,7 +40,7 @@ class TopNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
     }
 
     inner class TopNewsViewHolder(
-        private val itemBinding: ItemTopNewsBinding, val clickListener: (News, Int, Int) -> Unit
+        private val itemBinding: ItemTopNewsBinding, val clickListener: (News) -> Unit
     ) : RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
 
         private lateinit var news: News
@@ -63,7 +62,7 @@ class TopNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
         }
 
         override fun onClick(v: View?) {
-            clickListener(news, bindingAdapterPosition, TYPE_NEWS_DETAIL)
+            clickListener(news)
         }
 
     }
