@@ -4,6 +4,7 @@
     package="app.robo.news"
     tools:ignore="LockedOrientationActivity">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -25,7 +26,7 @@
         tools:targetApi="n">
 
         <activity
-            android:name=".ui.home.HomeActivity"
+            android:name=".ui.HomeActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="portrait">

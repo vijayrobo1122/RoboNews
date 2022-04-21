@@ -16,7 +16,6 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
-
 abstract class SafeApiRequest {
 
     companion object {
@@ -24,12 +23,12 @@ abstract class SafeApiRequest {
     }
 
     suspend fun <T : Any> apiRequest(call: suspend () -> T): ApiResult<T> {
-        try {
+        return try {
             val response = call.invoke()
-            return handleSuccess(response)
+            handleSuccess(response)
         } catch (e: Exception) {
             e.printStackTrace()
-            return handleException(e)
+            handleException(e)
         }
     }
 
@@ -49,32 +48,28 @@ abstract class SafeApiRequest {
                 Log.e(TAG, "handleException c1")
                 ApiResult.error(
                     getErrorMessage(ErrorCodes.SocketTimeOut.code),
-                    ErrorCodes.SocketTimeOut.code,
-                    null
+                    ErrorCodes.SocketTimeOut.code, null
                 )
             }
             is ConnectException -> {
                 Log.e(TAG, "handleException c2")
                 ApiResult.error(
                     getErrorMessage(ErrorCodes.SocketTimeOut.code),
-                    ErrorCodes.SocketTimeOut.code,
-                    null
+                    ErrorCodes.SocketTimeOut.code, null
                 )
             }
             is SocketTimeoutException -> {
                 Log.e(TAG, "handleException c3")
                 ApiResult.error(
                     getErrorMessage(ErrorCodes.SocketTimeOut.code),
-                    ErrorCodes.SocketTimeOut.code,
-                    null
+                    ErrorCodes.SocketTimeOut.code, null
                 )
             }
             is TimeoutException -> {
                 Log.e(TAG, "handleException c4")
                 ApiResult.error(
                     getErrorMessage(ErrorCodes.SocketTimeOut.code),
-                    ErrorCodes.SocketTimeOut.code,
-                    null
+                    ErrorCodes.SocketTimeOut.code, null
                 )
             }
             is JsonSyntaxException -> {
@@ -106,19 +101,16 @@ abstract class SafeApiRequest {
                         val gson = Gson()
                         val type = object : TypeToken<ErrorResponse>() {}.type
                         var errorResponse: ErrorResponse? = null
-                        try {
-                            errorResponse = gson.fromJson(body!!.charStream(), type)
+                        errorResponse = try {
+                            gson.fromJson(body!!.charStream(), type)
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            errorResponse = gson.fromJson(body!!.string(), type)
+                            gson.fromJson(body!!.string(), type)
                         }
                         if (errorResponse != null) {
                             Log.e(TAG, "handleException c81 errorResponse :$errorResponse")
                             if (errorResponse.code == 401) {
                                 Log.e(TAG, "Unauthorised")
-                                /**
-                                 * here call logout call here
-                                 */
                             }
                             ApiResult.error(errorResponse.message, errorResponse.code, null)
                         } else {
@@ -137,9 +129,7 @@ abstract class SafeApiRequest {
             else -> {
                 Log.e(TAG, "handleException c9")
                 ApiResult.error(
-                    getErrorMessage(Int.MAX_VALUE),
-                    ErrorCodes.SomethingWentWrong.code,
-                    null
+                    getErrorMessage(Int.MAX_VALUE), ErrorCodes.SomethingWentWrong.code, null
                 )
             }
         }
@@ -196,6 +186,5 @@ abstract class SafeApiRequest {
             else -> "Something went wrong with code $code"
         }
     }
-
 
 }

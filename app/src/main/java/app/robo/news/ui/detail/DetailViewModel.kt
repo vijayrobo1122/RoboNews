@@ -6,20 +6,11 @@ import app.robo.news.data.model.other.News
 import app.robo.news.data.remote.ApiResult
 import app.robo.news.data.remote.Status
 import app.robo.news.data.repository.NewsRepository
-import app.robo.news.ui.news.NewsViewModel
 import app.robo.news.utils.DEFAULT_PAGE_INDEX
 import app.robo.news.utils.Event
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class DetailViewModel @Inject constructor(private val newsRepository: NewsRepository) :
-    ViewModel() {
-
-    companion object {
-        private val TAG: String = NewsViewModel::class.java.simpleName
-    }
+class DetailViewModel constructor(private val newsRepository: NewsRepository) : ViewModel() {
 
     val _selectedNews: MutableLiveData<News> = MutableLiveData()
     val selectedNews: LiveData<News>
@@ -45,15 +36,6 @@ class DetailViewModel @Inject constructor(private val newsRepository: NewsReposi
     val showEmptyView: LiveData<Boolean>
         get() = _showEmptyView
 
-    private val _topNewsList: MutableLiveData<ArrayList<News>> =
-        MutableLiveData(ArrayList())
-    val topNewsList: LiveData<ArrayList<News>>
-        get() = _topNewsList
-
-    private val _topNewsListResponse = MediatorLiveData<Event<ApiResult<NewsListResponse>>>()
-    val topNewsListResponse: LiveData<Event<ApiResult<NewsListResponse>>>
-        get() = _topNewsListResponse
-
     val _popularNewsList: MutableLiveData<ArrayList<News>> = MutableLiveData(ArrayList())
     val popularNewsList: LiveData<ArrayList<News>>
         get() = _popularNewsList
@@ -62,34 +44,6 @@ class DetailViewModel @Inject constructor(private val newsRepository: NewsReposi
     val popularNewsListResponse: LiveData<Event<ApiResult<NewsListResponse>>>
         get() = _popularNewsListResponse
 
-    fun fetchTopNewsList() {
-        try {
-            viewModelScope.launch {
-                _topNewsListResponse.addSource(
-                    newsRepository.getTopHeadLineNewsList()
-                ) {
-                    if (it.status == Status.SUCCESS && it.data != null) {
-                        try {
-                            val list = it.data.newsList
-                            val totalResults = it.data.totalResults
-                            /**
-                             * for testing we are showing only one top news here
-                             */
-                            if (list.size > 0) {
-                                _topNewsList.value?.add(list[0])
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                    _topNewsListResponse.value = Event(it)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     fun fetchPopularNewsList(pageIndex: Int) {
         viewModelScope.launch {
             try {
@@ -97,7 +51,6 @@ class DetailViewModel @Inject constructor(private val newsRepository: NewsReposi
                     if (it.status == Status.SUCCESS && it.data != null) {
                         try {
                             val list = it.data.newsList
-                            val totalResults = it.data.totalResults
                             if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
                             _popularNewsList.value?.addAll(list)
                             if (it.data.totalResults > _popularNewsList.value!!.size) {

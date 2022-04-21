@@ -7,20 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.robo.news.R
 import app.robo.news.data.model.other.News
 import app.robo.news.data.remote.Status
 import app.robo.news.databinding.FragmentNewsBinding
+import app.robo.news.ui.HomeActivity
 import app.robo.news.ui.detail.DetailFragment
-import app.robo.news.ui.home.HomeActivity
 import app.robo.news.utils.*
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-@AndroidEntryPoint
 class NewsFragment : Fragment() {
 
     companion object {
@@ -34,18 +31,17 @@ class NewsFragment : Fragment() {
 
     private lateinit var binding: FragmentNewsBinding
 
-    private val viewModel: NewsViewModel by viewModels()
+    private val myViewModel: NewsViewModel by viewModel()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         Log.e(TAG, "onCreateView")
         binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.fragment_news, container, false
         )
         binding.lifecycleOwner = this
-        binding.viewModel = viewModel
+        binding.viewModel = myViewModel
         return binding.root
     }
 
@@ -58,7 +54,7 @@ class NewsFragment : Fragment() {
         observerPopularNewsListResponse()
         initialiseTopNewsAdapter()
         initialisePopularNewsAdapter()
-        viewModel.fetchTopNewsList()
+        myViewModel.fetchTopNewsList()
     }
 
     private fun setToolbar() {
@@ -96,24 +92,24 @@ class NewsFragment : Fragment() {
                 binding.mainScrollView.getChildAt(binding.mainScrollView.childCount - 1) as View
             val diff: Int =
                 view.bottom - (binding.mainScrollView.height + binding.mainScrollView.scrollY)
-            if (diff == 0 && viewModel.popularNewsList.value!!.size > 0 && !viewModel.lastPage.value!!) {
+            if (diff == 0 && myViewModel.popularNewsList.value!!.size > 0 && !myViewModel.lastPage.value!!) {
                 // your pagination code
                 //viewModel._loading.value = true
                 binding.viewLoading.visible()
-                viewModel.fetchPopularNewsList(viewModel.pageIndex.value!!)
+                myViewModel.fetchPopularNewsList(myViewModel.pageIndex.value!!)
             }
         }
 
     }
 
     private fun observerMessage() {
-        viewModel.message.observeEvent(this) {
+        myViewModel.message.observeEvent(this) {
             activity?.toast(it)
         }
     }
 
     private fun observerTopNewsListResponse() {
-        viewModel.topNewsListResponse.observeEvent(this) {
+        myViewModel.topNewsListResponse.observeEvent(this) {
             Log.d(TAG, "observerTopNewsListResponse observeEvent")
             when (it.status) {
                 Status.LOADING -> {
@@ -133,7 +129,7 @@ class NewsFragment : Fragment() {
                             activity?.toast(message)
                         }
                         binding.topNewsRecyclerView.adapter!!.notifyDataSetChanged()
-                        viewModel.fetchPopularNewsList(DEFAULT_PAGE_INDEX)
+                        myViewModel.fetchPopularNewsList(DEFAULT_PAGE_INDEX)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -153,7 +149,7 @@ class NewsFragment : Fragment() {
     }
 
     private fun observerPopularNewsListResponse() {
-        viewModel.popularNewsListResponse.observeEvent(this) {
+        myViewModel.popularNewsListResponse.observeEvent(this) {
             when (it.status) {
                 Status.LOADING -> {
                     Log.d(TAG, "LOADING...")
@@ -175,7 +171,8 @@ class NewsFragment : Fragment() {
                             activity?.toast(message)
                         }
                         binding.popularNewsRecyclerView.adapter!!.notifyDataSetChanged()
-                        viewModel._showEmptyView.value = viewModel.popularNewsList.value!!.size < 1
+                        myViewModel._showEmptyView.value =
+                            myViewModel.popularNewsList.value!!.size < 1
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }

@@ -16,10 +16,6 @@ class PopularNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
     RecyclerView.Adapter<PopularNewsAdapter.PopularNewsViewHolder>(),
     BindableAdapter<ArrayList<News>> {
 
-    companion object {
-        private val TAG: String = PopularNewsAdapter::class.java.simpleName
-    }
-
     private var items = ArrayList<News>()
 
     override fun setData(data: ArrayList<News>) {
@@ -27,10 +23,7 @@ class PopularNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): PopularNewsViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularNewsViewHolder {
         val binding: ItemPopularNewsBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context), R.layout.item_popular_news, parent, false
         )
@@ -47,13 +40,8 @@ class PopularNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
         return items.size
     }
 
-    private fun getItem(position: Int): News {
-        return items[position]
-    }
-
     inner class PopularNewsViewHolder(
-        private val itemBinding: ItemPopularNewsBinding,
-        val clickListener: (News, Int, Int) -> Unit
+        private val itemBinding: ItemPopularNewsBinding, val clickListener: (News, Int, Int) -> Unit
     ) :
         RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
 
@@ -78,6 +66,5 @@ class PopularNewsAdapter(private val clickListener: (News, Int, Int) -> Unit) :
         override fun onClick(v: View?) {
             clickListener(news, bindingAdapterPosition, TYPE_NEWS_DETAIL)
         }
-
     }
 }

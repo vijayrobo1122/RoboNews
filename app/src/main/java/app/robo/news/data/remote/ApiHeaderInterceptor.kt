@@ -5,19 +5,15 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import app.robo.news.BuildConfig
 import app.robo.news.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.net.ConnectException
-import javax.inject.Inject
 
-class ApiHeaderInterceptor @Inject constructor(@ApplicationContext private val appContext: Context) :
-    Interceptor {
+class ApiHeaderInterceptor constructor(private val appContext: Context) : Interceptor {
 
     companion object {
-        private val TAG = ApiHeaderInterceptor::class.java.simpleName
         private const val HEADER_KEY_AUTHORIZATION = "Authorization"
     }
 
@@ -28,8 +24,7 @@ class ApiHeaderInterceptor @Inject constructor(@ApplicationContext private val a
         }
 
         val request: Request = chain.request().newBuilder()
-            .addHeader(HEADER_KEY_AUTHORIZATION, "Bearer " + BuildConfig.API_KEY)
-            .build()
+            .addHeader(HEADER_KEY_AUTHORIZATION, "Bearer " + BuildConfig.API_KEY).build()
 
         return chain.proceed(request)
     }
@@ -49,5 +44,4 @@ class ApiHeaderInterceptor @Inject constructor(@ApplicationContext private val a
         }
         return result
     }
-
 }

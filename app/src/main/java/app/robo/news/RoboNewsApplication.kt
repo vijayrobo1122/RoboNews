@@ -2,13 +2,14 @@ package app.robo.news
 
 import android.util.Log
 import androidx.multidex.MultiDexApplication
-import dagger.hilt.android.HiltAndroidApp
+import app.robo.news.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
-@HiltAndroidApp
 class RoboNewsApplication : MultiDexApplication() {
 
     companion object {
-        private val TAG = "RoboNewsApplication"
+        private const val TAG = "RoboNewsApplication"
 
         private lateinit var myApplication: RoboNewsApplication
 
@@ -22,5 +23,9 @@ class RoboNewsApplication : MultiDexApplication() {
         super.onCreate()
         Log.d(TAG, "onCreate")
         myApplication = this
+        startKoin {
+            androidContext(this@RoboNewsApplication)
+            modules(appModule)
+        }
     }
 }

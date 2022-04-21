@@ -1,14 +1,13 @@
-package app.robo.news.ui.home
+package app.robo.news.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import app.robo.news.R
 import app.robo.news.databinding.ActivityHomeBinding
 import app.robo.news.ui.news.NewsFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
     companion object {
@@ -19,6 +18,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.lifecycleOwner = this
         setSupportActionBar(binding.toolbar)

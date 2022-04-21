@@ -5,10 +5,8 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import app.robo.news.R
 import com.bumptech.glide.Glide
-
 
 private val bindingUtilsTAG: String = "BindingUtils"
 
@@ -18,14 +16,6 @@ interface BindableAdapter<T> {
 
 interface BindableSelectedAdapter<T> {
     fun setData(data: T, selectedPos: Int)
-}
-
-
-@BindingAdapter("data")
-fun <T> setViewPagerProperties(viewPager2: ViewPager2, data: T) {
-    if (viewPager2.adapter is BindableAdapter<*>) {
-        (viewPager2.adapter as BindableAdapter<T>).setData(data)
-    }
 }
 
 @BindingAdapter("data")

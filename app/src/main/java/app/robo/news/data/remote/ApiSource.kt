@@ -8,18 +8,13 @@ interface ApiSource {
 
     @GET("top-headlines")
     suspend fun getTopHeadlineNewsList(
-        @Query("country") country: String,
-        @Query("category") category: String,
-        @Query("pageSize") pageSize: Int,
-        @Query("page") page: Int
+        @Query("country") country: String, @Query("category") category: String,
+        @Query("pageSize") pageSize: Int, @Query("page") page: Int
     ): NewsListResponse
 
     @GET("top-headlines")
     suspend fun getPopularNewsList(
-        @Query("country") country: String,
-        @Query("category") category: String,
-        @Query("pageSize") pageSize: Int,
-        @Query("page") page: Int,
-        @Query("q") search: String
+        @Query("country") country: String, @Query("category") category: String,
+        @Query("pageSize") pageSize: Int, @Query("page") page: Int, @Query("q") search: String
     ): NewsListResponse
 }

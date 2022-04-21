@@ -8,16 +8,9 @@ import app.robo.news.data.remote.Status
 import app.robo.news.data.repository.NewsRepository
 import app.robo.news.utils.DEFAULT_PAGE_INDEX
 import app.robo.news.utils.Event
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class NewsViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
-
-    companion object {
-        private val TAG: String = NewsViewModel::class.java.simpleName
-    }
+class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
     val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
     val loading: LiveData<Boolean>
@@ -59,13 +52,10 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
     fun fetchTopNewsList() {
         try {
             viewModelScope.launch {
-                _topNewsListResponse.addSource(
-                    newsRepository.getTopHeadLineNewsList()
-                ) {
+                _topNewsListResponse.addSource(newsRepository.getTopHeadLineNewsList()) {
                     if (it.status == Status.SUCCESS && it.data != null) {
                         try {
                             val list = it.data.newsList
-                            val totalResults = it.data.totalResults
                             /**
                              * for testing we are showing only one top news here
                              */
@@ -91,7 +81,6 @@ class NewsViewModel @Inject constructor(private val newsRepository: NewsReposito
                     if (it.status == Status.SUCCESS && it.data != null) {
                         try {
                             val list = it.data.newsList
-                            val totalResults = it.data.totalResults
                             if (pageIndex == DEFAULT_PAGE_INDEX) _popularNewsList.value!!.clear()
                             _popularNewsList.value?.addAll(list)
                             if (it.data.totalResults > _popularNewsList.value!!.size) {

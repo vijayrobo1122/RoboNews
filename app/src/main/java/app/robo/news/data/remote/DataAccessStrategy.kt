@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
 
-const val dasTAG: String = "DataAccessStrategy"
-
 fun <T> performNetworkOperation(networkCall: suspend () -> ApiResult<T>): LiveData<ApiResult<T>> =
     liveData(Dispatchers.IO) {
         emit(ApiResult.loading())
