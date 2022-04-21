@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import java.io.IOException
 
 fun <T> LiveData<Event<T>>.observeEvent(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
     observe(lifecycleOwner) { event ->
@@ -47,4 +48,15 @@ fun Context.toast(message: String?, duration: Int) {
 
         }
     }
+}
+
+fun Context.getJsonDataFromAsset(fileName: String): String? {
+    val jsonString: String
+    try {
+        jsonString = this.assets.open(fileName).bufferedReader().use { it.readText() }
+    } catch (ioException: IOException) {
+        ioException.printStackTrace()
+        return null
+    }
+    return jsonString
 }

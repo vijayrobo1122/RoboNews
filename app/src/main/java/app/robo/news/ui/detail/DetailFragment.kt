@@ -86,6 +86,7 @@ class DetailFragment : Fragment() {
         }
 
         if (myViewModel.selectedNews.value != null && !TextUtils.isEmpty(myViewModel.selectedNews.value!!.url)) {
+            binding.loaderView.progressView.visible()
             binding.webview.loadUrl(myViewModel.selectedNews.value!!.url!!)
             binding.webview.visible()
         } else {
