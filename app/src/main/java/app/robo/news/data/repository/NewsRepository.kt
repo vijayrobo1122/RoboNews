@@ -22,7 +22,7 @@ class NewsRepository constructor(private val context: Context, private val apiSo
     /**
      * making static page size 1 because of showing 1 top news in screen
      */
-    suspend fun getTopHeadLineNewsList(
+    fun getTopHeadLineNewsList(
         country: String = "in", category: String = "sports",
         pageSize: Int = 1, page: Int = 1
     ): LiveData<ApiResult<NewsListResponse>> {
@@ -46,7 +46,7 @@ class NewsRepository constructor(private val context: Context, private val apiSo
     /**
      * getting result of IPL news
      */
-    suspend fun getPopularNewsList(
+    fun getPopularNewsList(
         country: String = "in", category: String = "sports",
         pageSize: Int = 10, page: Int = 1, search: String = "IPL"
     ): LiveData<ApiResult<NewsListResponse>> {
